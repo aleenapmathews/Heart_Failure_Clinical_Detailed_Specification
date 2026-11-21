@@ -51,3 +51,19 @@ def ingest(path):
                     flagged.append((line_no,'zero cholesterol (median-imputed later)'))
     return clean,reject,flagged
 
+def write_clean_csv(rows,path):
+    with open(path,'w',newline='',encoding='utf-8') as f:
+        writer=csv.DictWriter(f,fieldnames=cols)
+        writer.writeheader()
+        writer.writerows(rows)
+
+def write_audit_log(rejected,flagged,n_clean,path):
+    with open(path,'w',encoding='utf-8') as f:
+        print(f'Cardio clinical audit-{datetime.now():%Y-%m-%d %H:%M-%S}',file=f)
+        print(f'Clean records:{n_clean}',file=f)
+        print(f'Rejected records:{len(rejected)}',file=f)
+        print(f'Flagged records:{len(flagged)}',file=f)
+        for line_no,reason in rejected:
+            print(f'REJECTED line {line_no}:{reason}',file=f)
+        for line_no,reason in flagged:
+            print(f'FLAGGED line{line_no},{reason}',file=f)
